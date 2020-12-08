@@ -104,26 +104,20 @@
         });
     }
 
+    // polygon variable.
+    var polygon;
 
     // getting all the markers at once
     function getAllMarkers() {
-
-        // var allMarkersObjArray = [];//new Array();
-        // var allMarkersGeoJsonArray = [];//new Array();
         var allLatLng = [];// array to store lat lng
 
         $.each(map._layers, function (ml) {
-            //console.log(map._layers)
             if (map._layers[ml].feature) {
-
-                // allMarkersObjArray.push(this)
-                // allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))
                 allLatLng.push([this._latlng.lat, this._latlng.lng])
             }
         })
 
-        //console.log(allMarkersObjArray);
-        var polygon = L.polygon(allLatLng, {color: 'red'});
+        polygon = L.polygon(allLatLng, {color: 'red'});
         polygon.addTo(map)
         console.log(allLatLng);
         alert("total Markers : " + allLatLng.length + "\n\n" + allLatLng + "\n\n Also see your console for object view of this array" );
@@ -131,6 +125,7 @@
 
     function buildMap()  {
         var allMarkersObjArray = [];//new Array();
+
         console.log(map._layers)
         $.each(map._layers, function (ml) {
             // console.log(map._layers)
@@ -138,21 +133,12 @@
                 allMarkersObjArray.push(this)
             }
         })
-        console.log(allMarkersObjArray);
-        // window.polygon.remove();
-        // document.getElementById('outerMap').innerHTML = "<div id='mapid' style='width: 600px; height: 400px;'></div>";
-        // var map = L.map('mapid');
-        // var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-        // var osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
-        // var osmLayer = new L.tileLayer(osmUrl, {
-        // 	maxZoom: 19,
-        // 	attribution: osmAttribution
-        // }).addTo(map);
-        // map.setView([19.0745, 72.9978], 13);
-        // map.addLayer(osmLayer);
-        // map.on('click', onMapClick);
-        // var validatorsLayer = new OsmJs.Weather.LeafletLayer({lang: 'en'});
-        // map.addLayer(validatorsLayer);
+
+        $.each(allMarkersObjArray, function (ml) {
+            map.removeLayer(allMarkersObjArray[ml]);
+        })
+
+        polygon.remove();
     }
 
     $(".get-markers").on("click", getAllMarkers);
