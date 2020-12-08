@@ -4,27 +4,47 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
   <script
   src="https://code.jquery.com/jquery-3.5.1.js"
   integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
   crossorigin="anonymous"></script>
+
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
   crossorigin=""/>
+
   <!-- Make sure you put this AFTER Leaflet's CSS -->
  <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
    crossorigin=""></script>
+
+
   <title>Leaflet Map</title>
 </head>
 <body>
-  <div id="mapid" style="width: 600px; height: 400px;"></div>
+  <div id="outerMap">
+      <div id="mapid" style="width: 600px; height: 400px;"></div>
+  </div>
   <div>
     <input class="get-markers" type="button" value="Get all the Markers" />
   </div>
+  <div>
+    <input class="reset" type="button" value="Reset" />
+  </div>
   <script>
-    var map = L.map('mapid').setView([19.0745, 72.9978], 13);
+    // map variable
+    var map = L.map('mapid');
+    var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+    var osmLayer = new L.tileLayer(osmUrl, {
+    	maxZoom: 19,
+    	attribution: osmAttribution
+    }).addTo(map);
 
+    map.setView([19.0745, 72.9978], 13);
+
+    // mapbox api call
     // L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicmstMTIzNCIsImEiOiJja2lldjNsOWUxd2gxMnlsYm43dGRzYTlzIn0.mxqrxd5H0aDZqQY23zFtMw', {
     // attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     // maxZoom: 18,
@@ -33,28 +53,6 @@
     // zoomOffset: -1,
     // accessToken: 'your.mapbox.access.token'
     // }).addTo(map);
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    	maxZoom: 19,
-    	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
-
-    // var marker = L.marker([51.5, -0.09]).addTo(map);
-    // var circle = L.circle([51.508, -0.11], {
-    // color: 'red',
-    // fillColor: '#f03',
-    // fillOpacity: 0.5,
-    // radius: 500
-    // }).addTo(map);
-    //
-    // var polygon = L.polygon([
-    // [51.509, -0.08],
-    // [51.503, -0.06],
-    // [51.51, -0.047]
-    // ]).addTo(map);
-
-    // attaching function on map click
-    map.on('click', onMapClick);
 
     // Script for adding marker on map click
     function onMapClick(e) {
@@ -81,7 +79,7 @@
                     riseOnHover: true,
                     draggable: true,
 
-                }).bindPopup("<p>e.latlng.toString()</p><input type='button' value='Delete this marker' class='marker-delete-button'/>");
+                }).bindPopup(e.latlng.toString() + "<br><input type='button' value='Delete this marker' class='marker-delete-button'/>");
 
                 marker.on("popupopen", onPopupOpen);
 
@@ -110,23 +108,59 @@
     // getting all the markers at once
     function getAllMarkers() {
 
-        var allMarkersObjArray = [];//new Array();
-        var allMarkersGeoJsonArray = [];//new Array();
+        // var allMarkersObjArray = [];//new Array();
+        // var allMarkersGeoJsonArray = [];//new Array();
+        var allLatLng = [];// array to store lat lng
 
         $.each(map._layers, function (ml) {
             //console.log(map._layers)
             if (map._layers[ml].feature) {
 
-                allMarkersObjArray.push(this)
-                                        allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))
+                // allMarkersObjArray.push(this)
+                // allMarkersGeoJsonArray.push(JSON.stringify(this.toGeoJSON()))
+                allLatLng.push([this._latlng.lat, this._latlng.lng])
             }
         })
 
+        //console.log(allMarkersObjArray);
+        var polygon = L.polygon(allLatLng, {color: 'red'});
+        polygon.addTo(map)
+        console.log(allLatLng);
+        alert("total Markers : " + allLatLng.length + "\n\n" + allLatLng + "\n\n Also see your console for object view of this array" );
+    }
+
+    function buildMap()  {
+        var allMarkersObjArray = [];//new Array();
+        console.log(map._layers)
+        $.each(map._layers, function (ml) {
+            // console.log(map._layers)
+            if (map._layers[ml].feature) {
+                allMarkersObjArray.push(this)
+            }
+        })
         console.log(allMarkersObjArray);
-        alert("total Markers : " + allMarkersGeoJsonArray.length + "\n\n" + allMarkersGeoJsonArray + "\n\n Also see your console for object view of this array" );
+        // window.polygon.remove();
+        // document.getElementById('outerMap').innerHTML = "<div id='mapid' style='width: 600px; height: 400px;'></div>";
+        // var map = L.map('mapid');
+        // var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        // var osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+        // var osmLayer = new L.tileLayer(osmUrl, {
+        // 	maxZoom: 19,
+        // 	attribution: osmAttribution
+        // }).addTo(map);
+        // map.setView([19.0745, 72.9978], 13);
+        // map.addLayer(osmLayer);
+        // map.on('click', onMapClick);
+        // var validatorsLayer = new OsmJs.Weather.LeafletLayer({lang: 'en'});
+        // map.addLayer(validatorsLayer);
     }
 
     $(".get-markers").on("click", getAllMarkers);
+
+    $(".reset").on("click", buildMap);
+
+    // attaching function on map click
+    map.on('click', onMapClick);
 
     //pop up stuff
     // var popup = L.popup();
