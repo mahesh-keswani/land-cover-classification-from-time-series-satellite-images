@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	Land Cover Classification
+{% endblock %}
+
+{% block body %}
+	<input type="hidden" id = "allLatLngVal">
+
+	<div class="row">
+		<div class="col-md-3" style="margin-top: 5%">
+			<script type="text/javascript">
+				var today = new Date();
+				var dd = today.getDate();
+				var mm = today.getMonth()+1; //January is 0!
+				var yyyy = today.getFullYear();
+				 if(dd<10){
+				        dd='0'+dd
+				    } 
+				    if(mm<10){
+				        mm='0'+mm
+				    } 
+
+				today = yyyy+'-'+mm+'-'+dd;
+
+				document.getElementById("fromDate").setAttribute("max", today);
+				document.getElementById("toDate").setAttribute("max", today);
+			</script>
+
+			<label class="form-control">From date</label>
+			<input type="date" id = "fromDate" class="form-control" min="2014-01-01">
+
+			<br><br><br><br>
+			<label class="form-control">To date</label>
+			<input type="date" id = "toDate" class="form-control" min="2014-01-01">
+
+
+		</div>
+		<div class="col-md-9">
+			<div id="outerMap">
+		     	<div id="mapid" style="width: 1000px;height: 450px;margin-top: 5%;"></div>
+		  	</div>
+			
+			<br>
+			<div class="row">
+				<div class="col">
+					<div>
+					    <input class="get-markers btn btn-success" type="button" value="Get all the Markers" />
+					</div>
+				</div>
+				<div class="col">
+				  	<div>
+				    	<input class="reset btn btn-danger" type="button" value="Reset" />
+				  	</div>	
+				</div>
+
+				<div class="col">
+				  	<div>
+				    	<input class="reset btn btn-primary" type="button" value="Submit" onclick="submitData();" />
+				  	</div>	
+				</div>
+			</div>
+		</div>
+	</div>
+	
+  <script>
+    // map variable
+
+   	const MAX_ZOOM = 30;
+   	var allLatLng = [];// array to store lat lng
+
+    var map = L.map('mapid');
+    var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+    var osmAttribution = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+    var osmLayer = new L.tileLayer(osmUrl, {
+    	maxZoom: 19,
+    	attribution: osmAttribution
+    }).addTo(map);
+
+    map.setView([19.0745, 72.9978], MAX_ZOOM);
+
+    // Script for adding marker on map click
+    function onMapClick(e) {
+
+        var geojsonFeature = {
+            "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [e.latlng.lat, e.latlng.lng]
+            }
+        }
+
+        var marker;
+
+        L.geoJson(geojsonFeature, {
+
+            pointToLayer: function(feature, latlng){
+
+                marker = L.marker(e.latlng, {
+
+                    title: "Resource Location",
+                    alt: "Resource Location",
+                    riseOnHover: true,
+                    draggable: true,
+
+                }).bindPopup(e.latlng.toString() + "<br><input type='button' value='Delete this marker' class='marker-delete-button'/>");
+
+                marker.on("popupopen", onPopupOpen);
+
+                return marker;
+            }
+        }).addTo(map);
+    }
+
+    // Function to handle delete as well as other events on marker popup open
+    function onPopupOpen() {
+
+        var tempMarker = this;
+
+        //var tempMarkerGeoJSON = this.toGeoJSON();
+
+        //var lID = tempMarker._leaflet_id; // Getting Leaflet ID of this marker
+
+        // To remove marker on click of delete
+        $(".marker-delete-button:visible").click(function () {
+            map.removeLayer(tempMarker);
+        });
+    }
+
+    // polygon variable.
+    var polygon;
+
+    // getting all the markers at once
+    function getAllMarkers() {
+
+        $.each(map._layers, function (ml) {
+            if (map._layers[ml].feature) {
+                allLatLng.push([this._latlng.lat, this._latlng.lng])
+            }
+        })
+
+        polygon = L.polygon(allLatLng, {color: 'red'});
+        polygon.addTo(map);
+        document.getElementById("allLatLngVal").value = allLatLng;
+    }
+
+    function buildMap()  {
+        var allMarkersObjArray = [];//new Array();
+
+        console.log(map._layers)
+        $.each(map._layers, function (ml) {
+            // console.log(map._layers)
+            if (map._layers[ml].feature) {
+                allMarkersObjArray.push(this)
+            }
+        })
+
+        $.each(allMarkersObjArray, function (ml) {
+            map.removeLayer(allMarkersObjArray[ml]);
+        })
+
+        polygon.remove();
+    }
+
+    function submitData(){
+		var fromDate = document.getElementById("fromDate").value;
+		var toDate = document.getElementById("toDate").value;
+		var allLatLngVal = document.getElementById("allLatLngVal").value;
+
+		console.log("From date: " +fromDate );
+		console.log("To date: " +fromDate );
+		console.log("Lat long"+allLatLngVal);
+
+		document.body.innerHTML += '<form id="dynForm" action="analysis" method="post"><input type="hidden" name="fromDate" value="'+fromDate+'"><input type="hidden" name="toDate" value="'+toDate+'"><input type="hidden" name="allLatLng" value="'+allLatLngVal.toString()+'">{% csrf_token %}</form>';
+            document.getElementById("dynForm").submit();
+	}
+
+    $(".get-markers").on("click", getAllMarkers);
+
+    $(".reset").on("click", buildMap);
+
+    // attaching function on map click
+    map.on('click', onMapClick);
+
+    //pop up stuff
+    // var popup = L.popup();
+    //
+    // function onMapClick(e) {
+    //     popup
+    //         .setLatLng(e.latlng)
+    //         .setContent("You clicked the map at " + e.latlng.toString())
+    //         .openOn(map);
+    // }
+    //
+    // map.on('click', onMapClick);
+  </script>
+{% endblock %}
