@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+  integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+  crossorigin=""/>
+  <!-- Make sure you put this AFTER Leaflet's CSS -->
+ <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+   integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+   crossorigin=""></script>
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.4.2/leaflet.draw.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+  <div id="mapid" style=" width: 1000px; height: 600px;"></div>
+  <button id='convert'>Get Json</button>
+  <p id="result"></p>
+  <script>
+    var map = L.map('mapid').setView([51.505, -0.09], 10);
+
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicmstMTIzNCIsImEiOiJja2lldjNsOWUxd2gxMnlsYm43dGRzYTlzIn0.mxqrxd5H0aDZqQY23zFtMw', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'your.mapbox.access.token',
+    }).addTo(map);
+
+
+    var drawnItems = new L.FeatureGroup();
+     map.addLayer(drawnItems);
+     var drawControl = new L.Control.Draw({
+         edit: {
+             featureGroup: drawnItems
+         }
+     });
+     map.addControl(drawControl);
+
+
+     map.on('draw:created',function(event){
+        var layer = event.layer,
+        feature = layer.feature = layer.feature||{};
+
+        feature.type = feature.type||"Feature";
+        var props = feature.properties = feature.properties||{};
+        drawnItems.addLayer(layer);
+     });
+
+     document.getElementById("convert").addEventListener("click",function(){
+        var latlong = $('#result').html(JSON.stringify(drawnItems.toGeoJSON()));
+     });
+
+</script>
+
+
+</body>
+</html>
+
+
