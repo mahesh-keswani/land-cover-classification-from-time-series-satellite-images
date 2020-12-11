@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}
+	Reunion Plots
+{% endblock %}
+
+{% block body %}
+
+	{% autoescape off %}
+  		{{ plot_div }}
+  	{% endautoescape %}
+
+{% endblock %}
