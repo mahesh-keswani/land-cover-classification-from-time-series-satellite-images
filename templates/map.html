@@ -172,7 +172,7 @@
 		console.log("To date: " +fromDate );
 		console.log("Lat long"+allLatLngVal);
 
-		document.body.innerHTML += '<form id="dynForm" action="analysis" method="post"><input type="hidden" name="fromDate" value="'+fromDate+'"><input type="hidden" name="toDate" value="'+toDate+'"><input type="hidden" name="allLatLng" value="'+allLatLngVal.toString()+'">{% csrf_token %}</form>';
+		document.body.innerHTML += '<form id="dynForm" action="analysis" method="post"><input type="hidden" name="fromDate" value="'+fromDate+'"><input type="hidden" name="toDate" value="'+toDate+'"><input type="hidden" name="allLatLng" value="'+allLatLngVal+'">{% csrf_token %}</form>';
             document.getElementById("dynForm").submit();
 	}
 
