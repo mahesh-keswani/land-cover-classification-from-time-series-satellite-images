@@ -1,0 +1,7 @@
+opencv_python==4.0.0.21
+Django==2.2.5
+numpy==1.16.2
+pandas==1.0.3
+plotly==4.8.1
+earthengine_api==0.1.242
+ee==0.4
