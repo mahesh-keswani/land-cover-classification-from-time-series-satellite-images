@@ -55,38 +55,43 @@ def getNumpyImages(fromDate, toDate, geomtery, collection):
 	  maxPixels=1e13,
 	  scale=30)
 
+	try:
+		ultra_blue = np.array((ee.Array(latlon_new1.get("B1")).getInfo())).reshape(-1, 1)
+		B = np.array((ee.Array(latlon_new1.get("B2")).getInfo())).reshape(-1, 1)
+		G = np.array((ee.Array(latlon_new1.get("B3")).getInfo())).reshape(-1, 1)
+		R = np.array((ee.Array(latlon_new1.get("B4")).getInfo())).reshape(-1, 1)
+		N = np.array((ee.Array(latlon_new1.get("B5")).getInfo())).reshape(-1, 1)
+		S1 = np.array((ee.Array(latlon_new1.get("B6")).getInfo())).reshape(-1, 1)
+		S2 = np.array((ee.Array(latlon_new1.get("B7")).getInfo())).reshape(-1, 1)
 
-	ultra_blue = np.array((ee.Array(latlon_new1.get("B1")).getInfo())).reshape(-1, 1)
-	B = np.array((ee.Array(latlon_new1.get("B2")).getInfo())).reshape(-1, 1)
-	G = np.array((ee.Array(latlon_new1.get("B3")).getInfo())).reshape(-1, 1)
-	R = np.array((ee.Array(latlon_new1.get("B4")).getInfo())).reshape(-1, 1)
-	N = np.array((ee.Array(latlon_new1.get("B5")).getInfo())).reshape(-1, 1)
-	S1 = np.array((ee.Array(latlon_new1.get("B6")).getInfo())).reshape(-1, 1)
-	S2 = np.array((ee.Array(latlon_new1.get("B7")).getInfo())).reshape(-1, 1)
+		lats = np.array((ee.Array(latlon_new1.get("latitude")).getInfo()))
+		lons = np.array((ee.Array(latlon_new1.get("longitude")).getInfo()))
 
-	lats = np.array((ee.Array(latlon_new1.get("latitude")).getInfo()))
-	lons = np.array((ee.Array(latlon_new1.get("longitude")).getInfo()))
+		print("Bands loaded!!!")
+		img_full = np.concatenate((ultra_blue, B, G, R, N, S1, S2), axis = 1)
 
-	print("Bands loaded!!!")
-	img_full = np.concatenate((ultra_blue, B, G, R, N, S1, S2), axis = 1)
+		# (NIR - R) / (NIR + R)
+		ndvi = (img_full[:, 4] - img_full[:, 3]) / ( img_full[:, 4] + img_full[:, 3] )
 
-	# (NIR - R) / (NIR + R)
-	ndvi = (img_full[:, 4] - img_full[:, 3]) / ( img_full[:, 4] + img_full[:, 3] )
+		# (G - NIR) / (G + NIR)
+		ndwi = (img_full[:, 2] - img_full[:, 4]) / ( img_full[:, 2] + img_full[:, 4] )
 
-	# (G - NIR) / (G + NIR)
-	ndwi = (img_full[:, 2] - img_full[:, 4]) / ( img_full[:, 2] + img_full[:, 4] )
+		# Brightness Index = sqrt(((Red * Red)/ (Green* Green))/2)
+		bi = np.sqrt( ( (img_full[:, 3]*img_full[:, 3]) / (img_full[:, 2]*img_full[:, 2]) ) / 2 )
+		print("Calcuated indexes done!!!")
 
-	# Brightness Index = sqrt(((Red * Red)/ (Green* Green))/2)
-	bi = np.sqrt( ( (img_full[:, 3]*img_full[:, 3]) / (img_full[:, 2]*img_full[:, 2]) ) / 2 )
-	print("Calcuated indexes done!!!")
+		Arr_norm = np.concatenate(( img_full, ndvi.reshape(-1, 1), ndwi.reshape(-1, 1), bi.reshape(-1, 1) ), axis = 1)
+		
+		df = pd.DataFrame(Arr_norm)
+		df.replace([np.inf, -np.inf], np.nan, inplace = True)
+		df.fillna(df.median(), inplace = True)
 
-	Arr_norm = np.concatenate(( img_full, ndvi.reshape(-1, 1), ndwi.reshape(-1, 1), bi.reshape(-1, 1) ), axis = 1)
+		return df.values, 1	
+	except Exception as e:
+		return  e, 0
+		
 	
-	df = pd.DataFrame(Arr_norm)
-	df.replace([np.inf, -np.inf], np.nan, inplace = True)
-	df.fillna(df.median(), inplace = True)
-
-	return df.values, 1	
+	
 
 def getData(fromDate, toDate, geomtery):
 	landsat = load_collection()
