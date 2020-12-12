@@ -8,3 +8,8 @@ def getPrediction(X):
 	model = load_model()
 	predictions = model.predict(X).astype('int32')
 	return predictions
+
+def scale_data(x):
+	sc = pickle.load(open('C:/Users/renu/Desktop/django_projects/beproject/beproject/my_scaler.pkl','rb'))
+	scaled_x = sc.transform(x)
+	return scaled_x
