@@ -6,8 +6,13 @@
 
 {% block body %}
 
+	
 	{% autoescape off %}
   		{{ plot_div }}
   	{% endautoescape %}
 
+  	{% autoescape off %}
+  		{{ plt_line_div }}
+  	{% endautoescape %}
+  	
 {% endblock %}
