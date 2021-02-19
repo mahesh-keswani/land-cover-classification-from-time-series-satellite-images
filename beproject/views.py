@@ -13,15 +13,15 @@ import os
 import pandas as pd
 
 def homepage(request):
-	return render(request, 'map.html')
+	return render(request, 'map1.html')
 
 def analysis(request):
 	if (request.method=='POST'):
 		fromDate = request.POST['fromDate']
 		toDate = request.POST['toDate']
-		allLatLng = request.POST['allLatLng']
-
-		allLatLng = allLatLng.split(",")
+                allLatLng = request.POST['test']
+                allLatLng = allLatLng[:-5]
+                allLatLng = eval(allLatLng)
 
 		N = len(allLatLng)
 		latLongPairs = []

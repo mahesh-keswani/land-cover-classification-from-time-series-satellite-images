@@ -102,12 +102,12 @@
         var test =  document.getElementById("result").innerHTML;
         var test = JSON.stringify(test);
         test = test.slice(139);
-        window.alert(test);
+        
 		console.log("From date: " +fromDate );
 		console.log("To date: " +fromDate );
 		console.log("Lat long"+latlong);
 
-		document.body.innerHTML += '<form id="dynForm" action="reunion/" method="post"><input type="hidden" name="fromDate" value="'+fromDate+'"><input type="hidden" name="toDate" value="'+toDate+'"><input type="text" name="test" value="'+test+'">{% csrf_token %}</form>';
+		document.body.innerHTML += '<form id="dynForm" action="analysis/" method="post"><input type="hidden" name="fromDate" value="'+fromDate+'"><input type="hidden" name="toDate" value="'+toDate+'"><input type="text" name="test" value="'+test+'">{% csrf_token %}</form>';
             document.getElementById("dynForm").submit();
 	}
 
