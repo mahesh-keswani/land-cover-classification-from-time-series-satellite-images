@@ -43,7 +43,7 @@ def filter_and_save(landsat, area, start, end, name):
     task_config = {
         'scale': 30,  
         'region': area,
-        'driveFolder':'landsat8'
+        'driveFolder':'Stuff'
         }
 
     task = ee.batch.Export.image(img1_full, name, task_config)
