@@ -19,9 +19,9 @@ def analysis(request):
 	if (request.method=='POST'):
 		fromDate = request.POST['fromDate']
 		toDate = request.POST['toDate']
-                allLatLng = request.POST['test']
-                allLatLng = allLatLng[:-5]
-                allLatLng = eval(allLatLng)
+		allLatLng = request.POST['test']
+		allLatLng = allLatLng[:-5]
+		allLatLng = eval(allLatLng)
 
 		N = len(allLatLng)
 		latLongPairs = []
