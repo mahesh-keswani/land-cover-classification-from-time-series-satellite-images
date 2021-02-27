@@ -13,7 +13,7 @@ import os
 import pandas as pd
 
 def homepage(request):
-	return render(request, 'map1.html')
+	return render(request, 'map.html')
 
 def analysis(request):
 	if (request.method=='POST'):
