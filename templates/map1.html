@@ -11,7 +11,7 @@
 
 <body style="background-image: url('{% static "images/back3.jpg" %}'); margin-top : 0%;">
   <div class="row" style="margin-top:2%; margin-left: 1%;">
-  <div id="mapid" class="col-md-9" style=" width: 1000px; height: 700px; margin-top:2%; margin-left: 1%;"></div>
+  <div id="mapid" class="col-md-9" style=" width: 1000px; height: 600px; margin-top:2%; margin-left: 1%;"></div>
   <input type="hidden" id = "allLatLngVal">
 
 
@@ -23,10 +23,10 @@
 				var yyyy = today.getFullYear();
 				 if(dd<10){
 				        dd='0'+dd
-				    } 
+				    }
 				    if(mm<10){
 				        mm='0'+mm
-				    } 
+				    }
 
 				today = yyyy+'-'+mm+'-'+dd;
 
@@ -40,10 +40,10 @@
 			<label class="form-control">To date</label>
 			<input type="date" id = "toDate" class="form-control" min="2014-01-01">
     </div>
-</div>
-</div>
-  <div class="row" style="margin-top: 2%; margin-left: 1%;">
-            <div class="col">
+	</div>y
+
+<div class="row justify-content-center" style="margin-top: 2%; margin-left: 1%;">
+            <div class="col-4">
                 <div>
                     <form method="get" action="{% url 'reunion' %}">
                         <input class="get-markers btn btn-warning" type="submit" value="Test On Reunion Island" />
@@ -51,11 +51,11 @@
                 </div>
             </div>
 
-    <div class="col">
-        <div>
-          <input class="reset btn btn-primary" type="button" value="Submit" onclick="submitData();" />
-        </div>	
-    </div>
+			    <div class="col-4">
+			        <div>
+			          <input class="reset btn btn-primary" type="button" value="Submit" onclick="submitData();" />
+			        </div>
+			    </div>
   </div>
 
   <script>
@@ -92,12 +92,12 @@
 
      document.getElementById("convert").addEventListener("click",function(){
         latlong = $('#result').html(JSON.stringify(drawnItems.toGeoJSON()));
-     
+
     });
      console.log(latlong);
     function submitData(){
 		var fromDate = document.getElementById("fromDate").value;
-		var toDate = document.getElementById("toDate").value;  
+		var toDate = document.getElementById("toDate").value;
         var latlong = $('#result').html(JSON.stringify(drawnItems.toGeoJSON()));
         var test =  document.getElementById("result").innerHTML;
         var test = JSON.stringify(test);
@@ -115,4 +115,3 @@
 
 
 {% endblock %}
-
