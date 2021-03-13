@@ -66,9 +66,9 @@ def plot_graphs(image1, image2):
 def reunion(request):
 
 	X = getReunionIsland.getReunionData()
-	plot_div = plotGraph(X, "Reunion Island Land Cover predictions")
+	plot_div, a = plotGraph(X, "Reunion Island Land Cover predictions")
 
-	return render(request, 'reunion.html', context={'plot_div': plot_div})
+	return render(request, 'reunion.html', context={'plot_div': plot_div, 'a':a})
 
 def plotGraph(X, title):
 	fig = go.Figure()
@@ -79,6 +79,7 @@ def plotGraph(X, title):
 	colors = ['green', 'red', 'blue', 'orange', 'cyan', 'yellow', 'black', 'magenta', 'brown', 'lightgreen'] 
 	bars = []
 	classes_to_per_day = []
+	a = []
 
 	for i, x in enumerate(X):
 		scaled_X = modelStuff.scale_data(x)                        
@@ -86,23 +87,33 @@ def plotGraph(X, title):
 	   
 		unique_ys, counts = np.unique(predictions, return_counts=True)
 		ys = ( counts / np.sum(counts) ) * 100
-		to_list = ys.tolist()
 		print(unique_ys, counts)
 
-		classes_to_per_day.append( [unique_ys, to_list] )
+		classes_to_per_day.append( [unique_ys, ys] )
 
 	for unique_ys, percentages in classes_to_per_day:
 		xs = []
 		for y in unique_ys:
 			xs.append(classes[y - 1])
 
+		a.append( [xs, percentages] )
 		bar = go.Bar(x=xs, y=percentages)
 		bars.append(bar)
+
+	# print("Array T", np.array(a).T)
+	# print("My shape", np.array(a).T.shape)
+	# print("First element", np.array(a).T[0])
+
+	b = []
+	for element in np.array(a).T:
+		print(element[1], element[1][0])
+		diff = abs(float(element[1][0]) - float(element[1][1]) )
+		b.append( [element[0][0], diff] )
 
 	fig_bars = go.Figure(data=bars, layout=go.Layout(barmode='group', title=title))	
 	plot_div = plot(fig_bars, output_type='div', include_plotlyjs=True, auto_open=True)
 
-	return plot_div
+	return plot_div, b
 
 def preloaded(request):
 	idx = request.POST.get('item')
@@ -112,8 +123,8 @@ def preloaded(request):
 	image1 = X[:lenX]
 	image2 = X[lenX:]
 
-	plot_div = plotGraph([image1, image2], idx)
-	return render(request, 'reunion.html', context={'plot_div': plot_div})
+	plot_div, a = plotGraph([image1, image2], idx)
+	return render(request, 'reunion.html', context={'plot_div': plot_div, 'a':a})
 
 
 
