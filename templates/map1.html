@@ -9,6 +9,14 @@
 
 {% block body %}
 
+<head>
+  <style type="text/css">
+    .block{
+      width: 100px;
+    }
+  </style>
+</head>
+
 <body style="background-image: url('{% static "images/back3.jpg" %}'); margin-top : 0%;">
   <div class="row" style="margin-top:2%; margin-left: 1%;">
   <div id="mapid" class="col-md-9" style=" width: 1000px; height: 600px; margin-top:2%; margin-left: 1%;"></div>
@@ -39,8 +47,28 @@
 			<br><br><br><br>
 			<label class="form-control">To date</label>
 			<input type="date" id = "toDate" class="form-control" min="2014-01-01">
+
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <div>
+                        <form method="get" action="{% url 'reunion' %}">
+                            <input type="submit" class="btn btn-warning" value="Test On Reunion Island" />
+                        </form>
+                    </div>
+                      {% for item in preloaded %}
+                      <li class="list-group-item">
+                          <div>
+                              <form method="get">
+                                  <button class="btn btn-warning" class = "block" onclick="getItem('{{ item }}')">{{ item }}</button>
+                              </form>
+                          </div>
+                        </li>
+                        <br>
+                      {% endfor %}
+                </li>
+            </ul>
     </div>
-	</div>y
+	</div>
 
 <div class="row justify-content-center" style="margin-top: 2%; margin-left: 1%;">
             <div class="col-4">
@@ -109,6 +137,12 @@
 		document.body.innerHTML += '<form id="dynForm" action="analysis/" method="post"><input type="hidden" name="fromDate" value="'+fromDate+'"><input type="hidden" name="toDate" value="'+toDate+'"><input type="text" name="test" value="'+test+'">{% csrf_token %}</form>';
             document.getElementById("dynForm").submit();
 	}
+
+    function getItem(item){
+        document.body.innerHTML += '<form id="dynForm" action="preloaded" method="post"><input type="hidden" name="item" value="'+item+'">{% csrf_token %}</form>';
+            document.getElementById("dynForm").submit();
+    }
+
 
 </script>
 
