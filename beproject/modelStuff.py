@@ -1,7 +1,7 @@
 import pickle
 
 def load_model():
-	loaded_model = pickle.load(open('C:/Users/renu/Desktop/django_projects/beproject/beproject/adaboost_for_tiselac.sav', 'rb'))
+	loaded_model = pickle.load(open('adaboost_for_tiselac.sav', 'rb'))
 	return loaded_model
 
 def getPrediction(X):
@@ -10,6 +10,6 @@ def getPrediction(X):
 	return predictions
 
 def scale_data(x):
-	sc = pickle.load(open('C:/Users/renu/Desktop/django_projects/beproject/beproject/my_scaler.pkl','rb'))
+	sc = pickle.load(open('my_scaler.pkl','rb'))
 	scaled_x = sc.transform(x)
 	return scaled_x
