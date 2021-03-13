@@ -5,7 +5,15 @@
 {% endblock %}
 
 {% block body %}
-
+	
+	<head>
+		<style type="text/css">
+			#myBox{
+				font-family: "Lucida Console";
+				width: 100%;
+			}
+		</style>
+	</head>
 	
 	{% autoescape off %}
   		{{ plot_div }}
@@ -14,5 +22,18 @@
   	{% autoescape off %}
   		{{ plt_line_div }}
   	{% endautoescape %}
+
+  	{% for item in a %}
+  		<div class="row">
+			<div class="jumbotron" id="myBox">
+				<div class="col">
+					<h4>Change in {{ item.0 }}</h4>
+					<br>
+					<h4>{{ item.1 }} %</h4>	
+				</div>
+			</div>
+	  		<br>
+  		</div>
+  	{% endfor %}
   	
 {% endblock %}
