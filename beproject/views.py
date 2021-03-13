@@ -13,7 +13,12 @@ import os
 import pandas as pd
 
 def homepage(request):
-	return render(request, 'map.html')
+	preloaded = [
+		"National_park_2019.tif", "National_park_2020.tif",
+		"Aus_fire_2019.tif", "Aus_fire_2020.tif"
+	]
+
+	return render(request, 'map1.html', context={'preloaded': preloaded } )
 
 def analysis(request):
 	if (request.method=='POST'):
@@ -58,73 +63,57 @@ def plot_graphs(image1, image2):
 	plot_div = plot_bars(predictions, "reunion.html", "Graphs for the real time data !!!")
 	return plot_div
 
-
 def reunion(request):
+
 	X = getReunionIsland.getReunionData()
+	plot_div = plotGraph(X, "Reunion Island Land Cover predictions")
 
-	if os.path.isfile('reunion_pred.csv'):
-		predictions = pd.read_csv('reunion_pred.csv').values
-	else:
-		predictions = []
-		for x in X:
-			predictions.append(modelStuff.getPrediction(x))
+	return render(request, 'reunion.html', context={'plot_div': plot_div})
 
-		predictions = np.array(predictions).T
-		pd.DataFrame(data = predictions, columns = range(1, 24)).to_csv('reunion_pred.csv', index = False)
-
-	
-	xs = list(range(1, 24))
-	classes_to_per = []
-	for day in range(23):
-		_, ys = np.unique(predictions[:, day], return_counts=True)
-		ys = ( ys / np.sum(ys) ) * 100
-		classes_to_per.append(ys.tolist())
-
-	# TODO: plot every row of classes_to_per on line chart
-	classes_to_per = np.array(classes_to_per).T.tolist()
-	# print(classes_to_per)
-	lines = []
+def plotGraph(X, title):
+	fig = go.Figure()
 	classes = ["urban areas", "other built-up surfaces", "forests", 
 		           "sparse vegetation", "rocks and bare soil", "grassland", 
 		           "sugarcane crops", "other crops", "water"]
 
 	colors = ['green', 'red', 'blue', 'orange', 'cyan', 'yellow', 'black', 'magenta', 'brown', 'lightgreen'] 
-	fig = go.Figure()
-	for i in range(len(classes_to_per)):
-		scatter = go.Scatter(x=xs, y=classes_to_per[i],
-                     mode='lines', name=classes[i],
-                     opacity=0.8, marker_color=colors[i])
-		fig.add_trace(scatter)
-
-	plt_line_div = plot(fig, output_type='div')
-
-	plot_div = plot_bars(predictions.T.tolist(), "reunion.html", title = 'Reunion Island Data from Landsat-8 of the year 2014')
-
-	return render(request, 'reunion.html', context={'plot_div': plot_div, 'plt_line_div': plt_line_div})
-
-
-def plot_bars(predictions, template, title):
 	bars = []
-	for i, pred in enumerate(predictions):
-		_, ys = np.unique(pred, return_counts=True)
+	classes_to_per_day = []
 
-		ys = ( ys / np.sum(ys) ) * 100
-		xs = ["urban areas", "other built-up surfaces", "forests", 
-		           "sparse vegetation", "rocks and bare soil", "grassland", 
-		           "sugarcane crops", "other crops", "water"]
+	for i, x in enumerate(X):
+		scaled_X = modelStuff.scale_data(x)                        
+		predictions = modelStuff.getPrediction(scaled_X)
+	   
+		unique_ys, counts = np.unique(predictions, return_counts=True)
+		ys = ( counts / np.sum(counts) ) * 100
+		to_list = ys.tolist()
+		print(unique_ys, counts)
 
-		bar = go.Bar(x=xs, y=ys, name="Day {}".format(i + 1))
+		classes_to_per_day.append( [unique_ys, to_list] )
+
+	for unique_ys, percentages in classes_to_per_day:
+		xs = []
+		for y in unique_ys:
+			xs.append(classes[y - 1])
+
+		bar = go.Bar(x=xs, y=percentages)
 		bars.append(bar)
 
-		# pie = {'labels':xs, 'values':ys, "domain": {"x": [0, .5], 'y': [0, 1.0]}, "name": "Day {}".format(i + 1), "hoverinfo":"label+percent+name", "hole": .4, "type": "pie"}
-		# pies.append(pie)
+	fig_bars = go.Figure(data=bars, layout=go.Layout(barmode='group', title=title))	
+	plot_div = plot(fig_bars, output_type='div', include_plotlyjs=True, auto_open=True)
 
-	fig = go.Figure(data=bars, layout=go.Layout(barmode='group', title=title))
-	# fig_pies = go.Figure(data=pies, layout=go.Layout(piemode='group', title='Reunion Island Data from Landsat-8 of the year 2014'))
-	
-	plot_div = plot(fig, output_type='div', include_plotlyjs=True, auto_open=True)
-	# plot_div_pies = plot(fig_pies, output_type='div', include_plotlyjs=True, auto_open=True)
 	return plot_div
+
+def preloaded(request):
+	idx = request.POST.get('item')
+	X = getReunionIsland.getPreloadedX(idx)
+
+	lenX = len(X) // 2
+	image1 = X[:lenX]
+	image2 = X[lenX:]
+
+	plot_div = plotGraph([image1, image2], idx)
+	return render(request, 'reunion.html', context={'plot_div': plot_div})
 
 
 
