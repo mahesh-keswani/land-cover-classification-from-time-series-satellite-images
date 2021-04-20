@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block body %}
+
+<div class="row justify-content-md-center" style="margin-top:5%";>
+    <h1> Landsat-8 Image Analysis </h1>
+</div>
+<div class="row justify-content-md-center" style="margin-top:1%";>
+    <h3>Upload your .tif image here</h3>
+</div>
+<div class="row justify-content-md-center" style="margin-top:6%;";>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h5>Select File 1</h5>
+    <input type="file" name="myfile1">
+    <h5>Select File 2</h5>
+    <input type="file" name="myfile2">
+    <br/>
+    <br/>
+    <button class="row justify-content-md-center" style="margin-top:1%"; type="submit">Upload Images</button>
+
+</form>
+
+</div>
+{% endblock %}

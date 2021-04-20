@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}
+	Land Cover Classification
+{% endblock %}
+
+
+{% block body %}
+
+
+  <!-- Navigation
+  <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="{% url 'home' %}">Land Cover Classification</a>
+      <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'map' %}">Map</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="">Upload TIFF File</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'reunion' %}">Reunion Island Result</a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="" id="navbarDropdownPortfolio" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Examples
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownPortfolio">
+              <a class="dropdown-item" href="">National Park 2019</a>
+              <a class="dropdown-item" href="">National Park 2020</a>
+              <a class="dropdown-item" href="">Australia 2019</a>
+              <a class="dropdown-item" href="">Australia 2020</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav> -->
+
+  <header>
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+      </ol>
+      <div class="carousel-inner" role="listbox">
+        <!-- Slide One - Set the background image for this slide in the line below -->
+        <div class="carousel-item active" style="background-image: url('https://cdn.vox-cdn.com/thumbor/6sljV_CN_pfclehaW3BAoFz1YYg=/1400x1050/filters:format(jpeg)/cdn.vox-cdn.com/uploads/chorus_asset/file/19763349/Geely_Sat.jpg')">
+        </div>
+        <!-- Slide Two - Set the background image for this slide in the line below -->
+        <div class="carousel-item" style="background-image: url('https://elitetourreunion.com/wp-content/uploads/2019/01/vue-de-la-R%C3%A9union-en-hauteur-1280x640.jpeg')">
+        </div>
+      </div>
+      <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Page Content -->
+  <div class="container">
+
+    <!-- <h1 class="my-4">Welcome to our Website</h1> -->
+    <div class="jumbotron" style="margin-top: 2%;">
+      <p style="font-size: x-large;">
+        In the past, scientists had to physically travel to places to do Land Cover Classification.
+        But due to advancements in satellite imagery, this process can be simplified.
+        In this project, we tried to do land cover classification using Landsat-8 Satellite Data.
+      </p>
+    </div>
+    <div>
+      <div>
+        <h2>Features</h2>
+        <p>Our Project has the following features:</p>
+        <ul>
+          <li>To detect change in land cover</li>
+          <li>To pixelwise classify the landcover</li>
+          <li>Map</li>
+          <li>Upload TIFF Image File</li>
+          <li>Example places given</li>
+        </ul>
+      </div>
+    </div>
+    <hr>
+    <!-- Marketing Icons Section -->
+    <div>
+      <h2>Technology Stack</h2>
+      <div class="row">
+        <div class="col-lg-4 mb-4">
+          <div class="card h-100">
+            <h4 class="card-header">Front-End</h4>
+            <div class="card-body">
+              <p class="card-text">
+                <ul>
+                  <li>HTML</li>
+                  <li>CSS</li>
+                  <li>JavaScript</li>
+                  <li>Bootstrap</li>
+                </ul>
+              </p>
+            </div>
+            <!-- <div class="card-footer">
+              <a href="#" class="btn btn-primary">Learn More</a>
+            </div> -->
+          </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+          <div class="card h-100">
+            <h4 class="card-header">Back-End</h4>
+            <div class="card-body">
+              <p class="card-text">
+                <ul>
+                  <li>Python</li>
+                  <li>Django</li>
+                </ul>
+              </p>
+            </div>
+            <!-- <div class="card-footer">
+              <a href="#" class="btn btn-primary">Learn More</a>
+            </div> -->
+          </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+          <div class="card h-100">
+            <h4 class="card-header">Others</h4>
+            <div class="card-body">
+              <p class="card-text">
+                <ul>
+                  <li>Google Earth Engine API</li>
+                  <li>Leaflet JS</li>
+                  <li>Google Colab</li>
+                  <li>Google Drive API</li>
+                </ul>
+              </p>
+            </div>
+            <!-- <div class="card-footer">
+              <a href="#" class="btn btn-primary">Learn More</a>
+            </div> -->
+          </div>
+        </div>
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- Features Section -->
+  
+    <hr>
+
+  <!-- Footer -->
+  <footer class="py-5 bg-dark">
+    <div class="container">
+    <p class="m-0 text-center text-white">Copyright &copy; Land Cover Classification Website 2021</p>
+    </div>
+    <!-- /.container -->
+  </footer>
+
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

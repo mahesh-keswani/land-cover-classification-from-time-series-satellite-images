@@ -1,0 +1,125 @@
+
+{% extends 'base.html' %}
+
+{% load static %}
+{% block title %}
+	Land Cover Classification
+{% endblock %}
+
+
+{% block body %}
+
+<body style="background-image: url('{% static "images/back3.jpg" %}'); margin-top : 0%;">
+  <div class="row" style="margin-top:2%; margin-left: 1%;">
+  <div id="mapid" class="col-md-9" style=" width: 900px; height: 500px; margin-top:2%; margin-left: 1%;"></div>
+  <input type="hidden" id = "allLatLngVal">
+
+
+		<div class=".col-md-3 .offset-md-3" style="margin-left: 1%; margin-top:2%" >
+			<script type="text/javascript">
+				var today = new Date();
+				var dd = today.getDate();
+				var mm = today.getMonth()+1; //January is 0!
+				var yyyy = today.getFullYear();
+				 if(dd<10){
+				        dd='0'+dd
+				    }
+				    if(mm<10){
+				        mm='0'+mm
+				    }
+
+				today = yyyy+'-'+mm+'-'+dd;
+
+				document.getElementById("fromDate").setAttribute("max", today);
+				document.getElementById("toDate").setAttribute("max", today);
+			</script>
+			<label class="form-control">From date</label>
+			<input type="date" id = "fromDate" class="form-control" min="2014-01-01">
+
+			<br><br><br><br>
+			<label class="form-control">To date</label>
+			<input type="date" id = "toDate" class="form-control" min="2014-01-01">
+    </div>
+	</div>
+
+    <div class="row justify-content-center" style="margin-top: 2%; margin-left: 1%;">
+        <div class="col-4">
+            <div>
+                <input class="get-markers btn btn-primary" type="button" value="Submit" onclick="submitData();" />
+            </div>
+        </div>
+  </div>
+
+  <script>
+    var map = L.map('mapid').setView([51.505, -0.09], 3);
+    var allLatLng = [];
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoicmstMTIzNCIsImEiOiJja2lldjNsOWUxd2gxMnlsYm43dGRzYTlzIn0.mxqrxd5H0aDZqQY23zFtMw', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'your.mapbox.access.token',
+    }).addTo(map);
+
+
+    var drawnItems = new L.FeatureGroup();
+     map.addLayer(drawnItems);
+     var drawControl = new L.Control.Draw({
+         edit: {
+             featureGroup: drawnItems
+         }
+     });
+     map.addControl(drawControl);
+
+     $(".get-markers").on("click", getAllMarkers);
+     function getAllMarkers() {
+
+    $.each(map._layers, function (ml) {
+        if (map._layers[ml].feature) {
+            allLatLng.push([this._latlng.lat, this._latlng.lng])
+        }
+    })
+
+    polygon = L.polygon(allLatLng, {color: 'red'});
+    polygon.addTo(map);
+    document.getElementById("allLatLngVal").value = allLatLng;
+    }
+     map.on('draw:created',function(event){
+        var layer = event.layer,
+        feature = layer.feature = layer.feature||{};
+
+        feature.type = feature.type||"Feature";
+        var props = feature.properties = feature.properties||{};
+        drawnItems.addLayer(layer);
+     });
+
+     document.getElementById("convert").addEventListener("click",function(){
+        latlong = $('#result').html(JSON.stringify(drawnItems.toGeoJSON()));
+
+    });
+     console.log(latlong);
+    function submitData(){
+		var fromDate = document.getElementById("fromDate").value;
+		var toDate = document.getElementById("toDate").value;
+        // var latlong = $('#result').html(JSON.stringify(drawnItems.toGeoJSON()));
+        // var test =  document.getElementById("result").innerHTML;
+        // var test = JSON.stringify(test);
+        // test = test.slice(139);
+        var allLatLngVal = document.getElementById("allLatLngVal").value;
+
+		console.log("From date: " +fromDate );
+		console.log("To date: " +fromDate );
+		console.log("Lat long"+allLatLngVal);
+
+		document.body.innerHTML += '<form id="dynForm" action="analysis" method="post"><input type="hidden" name="fromDate" value="'+fromDate+'"><input type="hidden" name="toDate" value="'+toDate+'"><input type="hidden" name="allLatLng" value="'+allLatLngVal+'">{% csrf_token %}</form>';
+            document.getElementById("dynForm").submit();
+		
+	}
+    
+
+</script>
+
+
+
+{% endblock %}
